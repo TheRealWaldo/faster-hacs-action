@@ -1,0 +1,26 @@
+name: Faster HACS Action
+description: Does what hacs/action deos, but faster
+branding:
+  icon: zap
+  color: gray-dark
+
+inputs:
+  github-token:
+    description: Github token for github
+    required: true
+    default: ${{ github.token }}
+  ignore:
+    description: "A space separated list of ignored checks, for valid entries see README.md"
+    required: false
+    default: ""
+  category:
+    description: "The category of repository"
+    required: true
+  comment:
+    description: "Post a comment to the PR with the result of the checks"
+    required: false
+    default: "true"
+
+runs:
+  using: node12
+  main: dist/index.js
