@@ -50,11 +50,12 @@ function setIgnoreMessage(message) {
   pullRequestMessages.push(ignoreMessage);
 }
 
-function runChecks(checkGroup, data = null) {
-  checkGroup.checks.forEach((check) => {
+async function runChecks(checkGroup, data = null) {
+  const checkPromises = checkGroup.checks.map((check) => new Promise((resolve) => {
     if (ignore.includes(check.name) && check.canSkip) {
       setIgnoreMessage(`Ignored check: ${check.name}`);
-    } else if (!check.ignore()) {
+      resolve();
+    } if (!check.ignore()) {
       Promise.resolve(check.check(data)).then((response) => {
         switch (typeof response) {
           case 'boolean':
@@ -84,9 +85,13 @@ function runChecks(checkGroup, data = null) {
             setFailed('Unknown check response type');
             break;
         }
+        resolve();
       });
+    } else {
+      resolve();
     }
-  });
+  }));
+  return Promise.all(checkPromises);
 }
 
 async function runCheckGroups(checkGroup) {
@@ -105,8 +110,7 @@ async function runCheckGroups(checkGroup) {
             throw error.message;
           })
           .then((response) => {
-            runChecks(checkGroup, response.data);
-            resolve();
+            runChecks(checkGroup, response.data).then(resolve());
           })
           .catch((error) => {
             setFailed(`Failed to process repo check: ${error.message}`);
@@ -116,8 +120,7 @@ async function runCheckGroups(checkGroup) {
       case 'json':
       case 'external':
       case 'functionality':
-        runChecks(checkGroup);
-        resolve();
+        runChecks(checkGroup).then(resolve());
         break;
       default:
         setFailed(`Unknown check group ${checkGroup.group}`);
