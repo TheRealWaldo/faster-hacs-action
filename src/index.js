@@ -55,7 +55,7 @@ async function runChecks(checkGroup, data = null) {
     if (ignore.includes(check.name) && check.canSkip) {
       setIgnoreMessage(`Ignored check: ${check.name}`);
       resolve();
-    } if (!check.ignore()) {
+    } else if (!check.ignore()) {
       Promise.resolve(check.check(data)).then((response) => {
         switch (typeof response) {
           case 'boolean':
