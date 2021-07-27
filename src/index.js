@@ -33,13 +33,13 @@ function setPassMessage(message) {
 }
 
 function setFailMessage(message, url) {
-  const failMessage = `${failIcon} ${message} (more-info: ${url}`;
+  const failMessage = `${failIcon} ${message} (more-info: ${url})`;
   setFailed(failMessage);
   pullRequestMessages.push(failMessage);
 }
 
 function setNeutralMessage(message, url) {
-  const neutralMessage = `${skipIcon} ${message} (more-info: ${url}`;
+  const neutralMessage = `${skipIcon} ${message} (more-info: ${url})`;
   info(neutralMessage);
   pullRequestMessages.push(neutralMessage);
 }
