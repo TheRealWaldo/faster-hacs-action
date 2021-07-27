@@ -144,7 +144,7 @@ Promise.all(promises).then(() => {
       repo,
       issue_number: pullRequestNumber,
     }).catch((error) => {
-      setFailed(`Posting pull request comment failed with ${error}`);
+      setFailed(`Listing pull request comments failed with ${error}`);
     }).then((comments) => {
       const existingComment = comments.find((comment) => comment.body.includes(commentIdentifier));
       if (existingComment) {
@@ -153,6 +153,8 @@ Promise.all(promises).then(() => {
           repo,
           comment_id: existingComment.id,
           body: pullRequestMessages.join('\n'),
+        }).catch((error) => {
+          setFailed(`Updating a pull request comment failed with ${error}`);
         });
       } else {
         octokit.issues.createComment({
@@ -160,6 +162,8 @@ Promise.all(promises).then(() => {
           repo,
           issue_number: pullRequestNumber,
           body: pullRequestMessages.join('\n'),
+        }).catch((error) => {
+          setFailed(`Posting pull request comment failed with ${error}`);
         });
       }
     });
