@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Faster HACS Action
-        uses: TheRealWaldo/faster-hacs-action@v0.0.2"
+        uses: TheRealWaldo/faster-hacs-action@v0.0.3"
         with:
           category: integration
 ```
