@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^13.2.0",
-    "@commitlint/config-conventional": "^13.1.0",
+    "@commitlint/config-conventional": "^13.2.0",
     "@release-it/bumper": "^3.0.1",
     "@release-it/conventional-changelog": "^3.3.0",
     "@vercel/ncc": "^0.31.1",
