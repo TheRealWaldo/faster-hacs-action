@@ -19,6 +19,6 @@ jobs:
       - uses: TheRealWaldo/quick-release@v0.1.1
         with:
           token: ${{ secrets.AUTO_PAT }}
-          replace-files: README.MD
+          replace-files: README.md
           git-user-email: 68967746+TRW-bot@users.noreply.github.com
           assignees: TheRealWaldo
