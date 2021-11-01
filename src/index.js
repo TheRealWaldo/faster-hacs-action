@@ -49,7 +49,7 @@ function setIgnoreMessage(message) {
 }
 
 async function runChecks(checkGroup, data = null) {
-  const checkPromises = checkGroup.checks.map((check) => new Promise((resolve) => {
+  const checkPromises = checkGroup.checks.map((check) => new Promise((resolve, reject) => {
     if (ignore.includes(check.name) && check.canSkip) {
       setIgnoreMessage(`Ignored check: ${check.name}`);
       resolve();
@@ -80,7 +80,7 @@ async function runChecks(checkGroup, data = null) {
             }
             break;
           default:
-            setFailed('Unknown check response type');
+            reject(new Error('Unknown check response type'));
             break;
         }
         resolve();
@@ -93,77 +93,64 @@ async function runChecks(checkGroup, data = null) {
 }
 
 async function runCheckGroups(checkGroup) {
-  return new Promise((resolve) => {
-    switch (checkGroup.group) {
-      case 'repo':
-        octokit
-          .request('GET /repos/{owner}/{repo}', {
-            headers: {
-              accept: 'application/vnd.github.mercy-preview+json',
-            },
-            owner,
-            repo,
-          })
-          .catch((error) => {
-            throw error.message;
-          })
-          .then((response) => {
-            runChecks(checkGroup, response.data).then(resolve());
-          })
-          .catch((error) => {
-            setFailed(`Failed to process repo check: ${error.message}`);
-          });
-        break;
-      case 'file':
-      case 'json':
-      case 'external':
-      case 'functionality':
-        runChecks(checkGroup).then(resolve());
-        break;
-      default:
-        setFailed(`Unknown check group ${checkGroup.group}`);
-        break;
-    }
-  });
+  switch (checkGroup.group) {
+    case 'repo':
+      return octokit
+        .request('GET /repos/{owner}/{repo}', {
+          headers: {
+            accept: 'application/vnd.github.mercy-preview+json',
+          },
+          owner,
+          repo,
+        })
+        .then((response) => runChecks(checkGroup, response.data));
+    case 'file':
+    case 'json':
+    case 'external':
+    case 'functionality':
+      return runChecks(checkGroup);
+    default:
+      throw new Error(`Unknown check group ${checkGroup.group}`);
+  }
 }
 
-const promises = checks.map((checkGroup) => runCheckGroups(checkGroup).catch((error) => setFailed(
-  `Something went wrong when processing the ${checkGroup.description}: ${error.message}`,
-)));
+const promises = checks.map((checkGroup) => runCheckGroups(checkGroup).catch((error) => {
+  throw new Error(
+    `Something went wrong when processing the ${checkGroup.description}: ${error.message}`,
+  );
+}));
 
-Promise.all(promises).then(() => {
-  if (context.payload.pull_request != null && postComment) {
+Promise.all(promises).catch((reason) => { setFailed(reason); });
+
+if (context.payload.pull_request != null && postComment) {
+  Promise.all(promises).then(() => {
     pullRequestMessages.push('\nThis check was completed with https://github.com/TheRealWaldo/faster-hacs-action which is designed to rapidly assess your HACS addon.  If this is a release, we still recommend you use the official https://github.com/hacs/action/ action!');
 
     const pullRequestNumber = context.payload.pull_request.number;
 
-    octokit.paginate(octokit.rest.issues.listComments, {
+    return octokit.paginate(octokit.rest.issues.listComments, {
       owner,
       repo,
       issue_number: pullRequestNumber,
-    }).catch((error) => {
-      setFailed(`Listing pull request comments failed with ${error}`);
     }).then((comments) => {
       const existingComment = comments.find((comment) => comment.body.includes(commentIdentifier));
       if (existingComment) {
-        octokit.issues.updateComment({
+        return octokit.issues.updateComment({
           owner,
           repo,
           comment_id: existingComment.id,
           body: pullRequestMessages.join('\n'),
-        }).catch((error) => {
-          setFailed(`Updating a pull request comment failed with ${error}`);
-        });
-      } else {
-        octokit.issues.createComment({
-          owner,
-          repo,
-          issue_number: pullRequestNumber,
-          body: pullRequestMessages.join('\n'),
-        }).catch((error) => {
-          setFailed(`Posting pull request comment failed with ${error}`);
         });
       }
+
+      return octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: pullRequestNumber,
+        body: pullRequestMessages.join('\n'),
+      });
     });
-  }
-});
+  }).catch((reason) => {
+    setFailed(reason);
+  });
+}
