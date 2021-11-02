@@ -1,5 +1,5 @@
 import {
-  getInput, setFailed, info, getBooleanInput,
+  getInput, setFailed, info, exportVariable, getBooleanInput,
 } from '@actions/core';
 import { context } from '@actions/github';
 import checks from './checks';
@@ -8,9 +8,10 @@ const ignore = getInput('ignore').split(' ') || [];
 const githubToken = getInput('github-token');
 const postComment = getBooleanInput('comment');
 
+exportVariable('GITHUB_TOKEN', githubToken);
 const { Octokit } = require('@octokit/action');
 
-const octokit = new Octokit({ auth: githubToken });
+const octokit = new Octokit();
 
 const repository = process.env.GITHUB_REPOSITORY;
 const [owner, repo] = repository.split('/');
