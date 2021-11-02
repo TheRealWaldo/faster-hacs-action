@@ -10,16 +10,16 @@ inputs:
     required: true
     default: ${{ github.token }}
   ignore:
-    description: "A space separated list of ignored checks, for valid entries see README.md"
+    description: 'A space separated list of ignored checks, for valid entries see README.md'
     required: false
-    default: ""
+    default: ''
   category:
-    description: "The category of repository"
+    description: 'The category of repository'
     required: true
   comment:
-    description: "Post a comment to the PR with the result of the checks"
+    description: 'Post a comment to the PR with the result of the checks'
     required: false
-    default: "true"
+    default: 'true'
 
 runs:
   using: node12
