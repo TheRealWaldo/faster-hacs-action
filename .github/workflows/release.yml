@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: TheRealWaldo/quick-release@v0.2.0
+      - uses: TheRealWaldo/quick-release@v0.4.0
         with:
           token: ${{ secrets.AUTO_PAT }}
           replace-files: README.md
