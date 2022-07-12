@@ -29,7 +29,7 @@
     "actions-toolkit": "^6.0.1",
     "glob": "^8.0.3",
     "json5": "^2.2.1",
-    "node-fetch": "^3.2.6"
+    "node-fetch": "^3.2.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
