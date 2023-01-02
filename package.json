@@ -28,7 +28,7 @@
     "@octokit/action": "^4.0.10",
     "actions-toolkit": "^6.0.1",
     "glob": "^8.0.3",
-    "json5": "^2.2.2",
+    "json5": "^2.2.3",
     "node-fetch": "^3.3.0"
   },
   "devDependencies": {
