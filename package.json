@@ -32,7 +32,7 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.2.1",
+    "@commitlint/cli": "^19.2.2",
     "@commitlint/config-conventional": "^18.5.0",
     "@vercel/ncc": "^0.38.1",
     "eslint": "^9.0.0",
