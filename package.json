@@ -27,7 +27,7 @@
     "@actions/github": "^6.0.0",
     "@octokit/action": "^7.0.0",
     "actions-toolkit": "^6.0.1",
-    "glob": "^10.4.2",
+    "glob": "^11.0.0",
     "json5": "^2.2.3",
     "node-fetch": "^3.3.2"
   },
